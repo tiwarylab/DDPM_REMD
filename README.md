@@ -23,6 +23,8 @@ To use the trained model to generate figures, you can run the `gen_sample.py` af
 python gen_sample.py
 ```
 
+A demo of using this model can be found in `DPPM_REMD_SciML.ipynb`.
+
 ## Citations
 
 ```bibtex
