@@ -18,9 +18,9 @@ To train the model, you can run the `run_training.py` after modifying the parame
 ```bash
 python run_training.py
 ```
-To use the trained model to generate figures, you can run the `gen_fig.py` after modifying the parameters insde the script.
+To use the trained model to generate figures, you can run the `gen_sample.py` after modifying the parameters insde the script.
 ```bash
-python run_training.py
+python gen_sample.py
 ```
 
 ## Citations
