@@ -11,10 +11,9 @@ model = Unet(
     dim = 32,
     dim_mults = (1, 2, 2, 4),
     groups = 8 # due to the dim numbers
-).to(device) 
+)
 
 model = nn.DataParallel(model)
-
 model.to(device)
 
 op_num = 18
@@ -39,20 +38,21 @@ trainer = Trainer(
     op_number = op_num,
     fp16 = False                       # turn on mixed precision training with apex
 )
-model_id = 20
-trainer.load(model_id)
 
-training_ds = trainer.ds
-sample_ds = Dataset_traj('traj_AIB9', 'AIB9_REMD_T_full_100000ps_0.2ps')
-num_sample = 20000 
-batch_size = 1280
-sample_dl = cycle(data.DataLoader(sample_ds, batch_size = batch_size, shuffle=True, pin_memory=True))
+num_sample = 2000 #total number of samples
+model_id = 30
+trainer.load(model_id) 
+
+batch_size = 1280  #the number of samples generated in each batch
+sample_ds = Dataset_traj('traj_AIB9', 'sample_T') 
+sample_ds.max_data = trainer.ds.max_data
+sample_ds.min_data = trainer.ds.min_data        #To ensure that the sample data is scaled in the same way as the training data
+sample_dl = cycle(data.DataLoader(sample_ds, batch_size = batch_size, shuffle=True, pin_memory=True)) 
+
+
 batches = num_to_groups(num_sample, batch_size)
-
 all_ops_list = list(map(lambda n: trainer.ema_model.sample(trainer.op_number, batch_size=n, samples = next(sample_dl).cuda()[:n, :]), batches))
 all_ops = torch.cat(all_ops_list, dim=0).cpu()
 all_ops = trainer.rescale_sample_back(all_ops)
-np.save( str(trainer.RESULTS_FOLDER /  f'samples-{model_id}'), all_ops.numpy())
-
-print( str(trainer.RESULTS_FOLDER /  f'samples-{model_id}') )
-
+np.save(str(trainer.RESULTS_FOLDER / f'samples-{model_id}'), all_ops.numpy())
+print(str(trainer.RESULTS_FOLDER / f'samples-{model_id}.npy'))
