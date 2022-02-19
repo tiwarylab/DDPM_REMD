@@ -47,7 +47,7 @@ batch_size = 1280  #the number of samples generated in each batch
 sample_ds = Dataset_traj('traj_AIB9', 'sample_T') 
 sample_ds.max_data = trainer.ds.max_data
 sample_ds.min_data = trainer.ds.min_data        #To ensure that the sample data is scaled in the same way as the training data
-sample_dl = cycle(data.DataLoader(sample_ds, batch_size = batch_size, shuffle=True, pin_memory=True)) 
+sample_dl = cycle(data.DataLoader(sample_ds, batch_size = batch_size, shuffle=True, drop_last=True, pin_memory=True)) 
 
 
 batches = num_to_groups(num_sample, batch_size)
